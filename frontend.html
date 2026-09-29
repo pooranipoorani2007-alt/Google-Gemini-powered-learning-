@@ -1,0 +1,77 @@
+001 &lt;!DOCTYPE html&gt;
+002 &lt;html&gt;
+003 &lt;head&gt;
+004 &lt;title&gt;EduGenie&lt;/title&gt;
+005 &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;
+006 &lt;/head&gt;
+007 &lt;body&gt;
+008 &lt;div class=&quot;container&quot;&gt;
+009 &lt;h1&gt;EduGenie&lt;/h1&gt;
+010 &lt;p class=&quot;tagline&quot;&gt;AI-Powered Educational Assistant&lt;/p&gt;
+011
+012 &lt;section&gt;
+013 &lt;h2&gt;Ask a Question&lt;/h2&gt;
+014 &lt;input id=&quot;question&quot; placeholder=&quot;Example: Which is the largest ocean?&quot;&gt;
+015 &lt;button onclick=&quot;askQuestion()&quot;&gt;Ask EduGenie&lt;/button&gt;
+016 &lt;div id=&quot;answer&quot; class=&quot;output&quot;&gt;&lt;/div&gt;
+017 &lt;/section&gt;
+018
+019 &lt;section&gt;
+020 &lt;h2&gt;Generate Quiz&lt;/h2&gt;
+021 &lt;input id=&quot;quizTopic&quot; value=&quot;Pythagoras Theorem&quot;&gt;
+022 &lt;button onclick=&quot;generateQuiz()&quot;&gt;Generate Quiz&lt;/button&gt;
+023 &lt;div id=&quot;quiz&quot; class=&quot;output&quot;&gt;&lt;/div&gt;
+024 &lt;/section&gt;
+025
+026 &lt;section&gt;
+027 &lt;h2&gt;Personalized Learning Path&lt;/h2&gt;
+028 &lt;input id=&quot;pathTopic&quot; value=&quot;SQL&quot;&gt;
+029 &lt;button onclick=&quot;learningPath()&quot;&gt;Create Learning Path&lt;/button&gt;
+030 &lt;div id=&quot;path&quot; class=&quot;output&quot;&gt;&lt;/div&gt;
+031 &lt;/section&gt;
+032 &lt;/div&gt;
+033
+034 &lt;script&gt;
+035 const API = &quot;http://127.0.0.1:8000&quot;;
+036
+037 async function askQuestion() {
+038 const question = document.getElementById(&quot;question&quot;).value;
+039 const r = await fetch(API + &quot;/ask&quot;, {
+040 method: &quot;POST&quot;,
+041 headers: {&quot;Content-Type&quot;:&quot;application/json&quot;},
+042 body: JSON.stringify({question})
+043 });
+044 const data = await r.json();
+045 document.getElementById(&quot;answer&quot;).innerHTML = &quot;&lt;b&gt;Answer:&lt;/b&gt; &quot; + data.answer;
+046 }
+047
+048 async function generateQuiz() {
+049 const topic = document.getElementById(&quot;quizTopic&quot;).value;
+050 const r = await fetch(API + &quot;/quiz&quot;, {
+051 method: &quot;POST&quot;,
+052 headers: {&quot;Content-Type&quot;:&quot;application/json&quot;},
+053 body: JSON.stringify({topic})
+054 });
+055 const data = await r.json();
+056 document.getElementById(&quot;quiz&quot;).innerHTML =
+057 data.quiz.map((x,i) =&gt; `&lt;p&gt;&lt;b&gt;${i+1}. ${x.question}&lt;/b&gt;&lt;br&gt;Answer: ${x.answer}&lt;/p&gt;`).join(&quot;&quot;);
+058 }
+059
+060 async function learningPath() {
+061 const topic = document.getElementById(&quot;pathTopic&quot;).value;
+062 const r = await fetch(API + &quot;/learning-path&quot;, {
+063 method: &quot;POST&quot;,
+064 headers: {&quot;Content-Type&quot;:&quot;application/json&quot;},
+065 body: JSON.stringify({topic})
+066 });
+
+067 const data = await r.json();
+068 document.getElementById(&quot;path&quot;).innerHTML =
+069 `&lt;h3&gt;${data.topic} - ${data.timeline}&lt;/h3&gt;` +
+070 data.levels.map(l =&gt; `&lt;p&gt;&lt;b&gt;${l.level}&lt;/b&gt;: ${l.topics.join(&quot;, &quot;)}&lt;/p&gt;`).join(&quot;&quot;) +
+071 `&lt;p&gt;&lt;b&gt;Suggestions:&lt;/b&gt; ${data.suggestions.join(&quot; | &quot;)}&lt;/p&gt;`;
+072 }
+073 &lt;/script&gt;
+074 &lt;/body&gt;
+075 &lt;/html&gt;
+
